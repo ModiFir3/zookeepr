@@ -1,17 +1,17 @@
 const express = require('express');
 const fs = require('fs');
 const path = require('path');
-const res = require('express/lib/response');
 const { animals } = require('./data/animals');
+// const res = require('express/lib/response');
 
 const PORT = process.env.PORT || 3001;
 const app = express();
 
 //parse incoming string or array data
 app.use(express.urlencoded({ extended: true }));
-
 //parse incoming JSON data
-app.use(express.json())
+app.use(express.json());
+app.use(express.static('public'));
 
 function filterByQuery(query, animalsArray) {
   let personalityTraitsArray = [];
@@ -57,23 +57,6 @@ function findById(id, animalsArray) {
   return result;
 }
 
-app.get('/api/animals', (req, res) => {
-  let results = animals;
-  if (req.query) {
-    results = filterByQuery(req.query, results);
-  }
-  res.json(results);
-});
-
-app.get('/api/animals/:id', (req, res) => {
-  const result = findById(req.params.id, animals);
-  if (result) {
-    res.json(result)
-  } else {
-    res.send(404)
-  }
-});
-
 function createNewAnimal(body, animalsArray) {
   const animal = body;
   
@@ -103,6 +86,24 @@ function validateAnimal(animal) {
   return true;
 }
 
+app.get('/api/animals', (req, res) => {
+  let results = animals;
+  if (req.query) {
+    results = filterByQuery(req.query, results);
+  }
+  res.json(results);
+});
+
+app.get('/api/animals/:id', (req, res) => {
+  const result = findById(req.params.id, animals);
+  if (result) {
+    res.json(result)
+  } else {
+    res.send(404)
+  }
+});
+
+
 app.post('/api/animals', (req, res) => {
   // set id based on what the next index of the array will be
   req.body.id = animals.length.toString();
@@ -115,7 +116,11 @@ app.post('/api/animals', (req, res) => {
   
     res.json(req.body);
   }
-})
+});
+
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, './public/index.html'));
+});
 
 app.listen(PORT, () => {
   console.log(`API server now on port ${PORT}`);
