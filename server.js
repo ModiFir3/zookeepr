@@ -59,11 +59,11 @@ function findById(id, animalsArray) {
 
 function createNewAnimal(body, animalsArray) {
   const animal = body;
-  
+
   animalsArray.push(animal);
 
   fs.writeFileSync(path.join(__dirname, './data/animals.json'),
-  JSON.stringify({ animals: animalsArray }, null, 2)
+    JSON.stringify({ animals: animalsArray }, null, 2)
   )
 
   //return finishes code to post route for reponse
@@ -73,7 +73,7 @@ function createNewAnimal(body, animalsArray) {
 function validateAnimal(animal) {
   if (!animal.name || typeof animal.name !== 'string') {
     return false;
-  } 
+  }
   if (!animal.species || typeof animal.species !== 'string') {
     return false;
   }
@@ -113,12 +113,24 @@ app.post('/api/animals', (req, res) => {
     res.status(400).send('The animal is not properly formatted');
   } else {
     const animal = createNewAnimal(req.body, animals);
-  
+
     res.json(req.body);
   }
 });
 
 app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, './public/index.html'));
+});
+
+app.get('/animals', (req, res) => {
+  res.sendFile(path.join(__dirname, './public/animals.html'));
+});
+
+app.get('/zookeepers', (req, res) => {
+  res.sendFile(path.join(__dirname, './public/zookeepers.html'));
+});
+
+app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, './public/index.html'));
 });
 
